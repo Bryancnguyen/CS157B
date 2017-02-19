@@ -215,3 +215,10 @@ After this, my business table was successfully imported, however some of the dat
 * [ ] optimize performance: improve performance via de-normalization (vertical / horizontal partitioning), indexes, views
 
 ---
+
+
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
