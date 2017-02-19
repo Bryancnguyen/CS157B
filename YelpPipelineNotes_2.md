@@ -53,11 +53,3 @@ Using Yelp Dataset, go through the following steps and include detailed descript
 * [ ] optimize performance: improve performance via de-normalization (vertical / horizontal partitioning), indexes, views
 
 ---
-
-
-
-<style>
-h1 {
-  color: blue;
-}
-</style>
