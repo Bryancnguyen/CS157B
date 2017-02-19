@@ -41,8 +41,8 @@ Using Yelp Dataset, go through the following steps and include detailed descript
 
   After this command, I was shown the lines that exist in my file.
 
-  | neighborhood | business_id | hours | is_open | address|attributes| categories | city | review_count | name | longitude | state | stars | latitude | postal_code | type |
-  | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+  | neighborhood | business_id | hours | is_open | address | attributes | categories | city | review_count | name | longitude | state | stars | latitude | postal_code | type |
+  |--------------|-------------|-------|---------|---------|------------|------------|------|--------------|------|-----------|-------|-------|----------|-------------|------|
 
 
 ##LOAD
