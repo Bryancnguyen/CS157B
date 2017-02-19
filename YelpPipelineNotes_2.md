@@ -26,6 +26,8 @@ Using Yelp Dataset, go through the following steps and include detailed descript
 
 #Transform & Load
 
+
+
   ##Transform
 
   In order to get the data into MySQL, I decided to go down the JSON route. First, I pulled all the information off the Google Drive because it seemed like JSON data would be much easier to import compared to getting the very large CSV files into MySQL. However, this turned out to be more confusing attempting to just view the JSON file in a JSON validating tool was not possible. Instead, I went back to using the provided CSV files.
