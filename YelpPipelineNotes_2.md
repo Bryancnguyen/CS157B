@@ -129,15 +129,37 @@ Select time from checkin;_
 
 #Query
 
+Simple OLTP-like query:
 
+INSERT INTO review (user_id, stars, date, business_id)
+VALUES ('NwiW9D0809b9jbuEXenUEg', '5', '2017-02-18', 'a048R60CLFeObJ3mhHdPRg');
+
+This is just a typical query of a user inserting a new rating for a business into the reviews table.
+
+One OLAP-like query:
+
+SELECT  review.business_id,
+        review.date,
+        review.stars
+FROM review
+INNER JOIN user ON review.user_id=user.user_id
+INNER JOIN business on business.business_id=review_id
+where date LIKE '%2013%' and stars > 3;
 
 ---
 
-* [ ] update: one simple update (single row, possibly over multiple tables) and one batch update (multiple rows)
+* [x] update: one simple update (single row, possibly over multiple tables) and one batch update (multiple rows)
 
 #Update
 
+One single row update I did was:
 
+UPDATE user U
+    INNER JOIN review R
+    ON U.user_id = R.user_id
+      SET U.funny = R.funny;
+
+Simple update query based on the user_id from both tables to set funny columns equal to each other.
 
 One Batch Update SQL query that I ran was similar to one of the queries above:
 
@@ -154,6 +176,25 @@ This was to remove the unnecessary u' data and commas that were in my data.
 * [ ] optimize quality: illustrate how to capture and maintain data quality via integrity constraints, normalization and transactions
 
 #Optimize Quality
+
+ALTER TABLE business ADD PRIMARY KEY(business_id);
+
+ALTER TABLE checkin
+ADD FOREIGN KEY (business_id)
+REFERENCES business (business_id);
+
+ALTER TABLE review
+ADD FOREIGN KEY (business_id)
+REFERENCES business (business_id);
+
+ALTER TABLE tip
+ADD FOREIGN KEY (business_id)
+REFERENCES business (business_id);
+
+ALTER TABLE tip
+ADD FOREIGN KEY (user_id)
+REFERENCES user (user_id);
+
 
 ---
 
