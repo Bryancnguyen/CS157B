@@ -129,12 +129,6 @@ Select time from checkin;_
 
 #Query
 
-One OTLP-like SQL query that I ran was similar to one of the queries above:
-
-_UPDATE business
-SET attributes = replace(attributes,'u'','');_
-
-This performs an update on the following columns in the table. Another OTLP command I ran was:
 
 
 ---
@@ -142,6 +136,18 @@ This performs an update on the following columns in the table. Another OTLP comm
 * [ ] update: one simple update (single row, possibly over multiple tables) and one batch update (multiple rows)
 
 #Update
+
+
+
+One Batch Update SQL query that I ran was similar to one of the queries above:
+
+_UPDATE business
+SET attributes = replace(attributes,'u'','');_
+
+_UPDATE business
+SET attributes = replace(attributes,','','');_
+
+This was to remove the unnecessary u' data and commas that were in my data.
 
 ---
 
