@@ -6,7 +6,7 @@ CS157B Notes Homework 2
 
 Using Yelp Dataset, go through the following steps and include detailed description (what have you done, what are the results) in your notes:
 
-* [ ] extract: extract as much data as you can and need to face Big Data challenges (remember: volume, variety, veracity | we can discuss how to 'simulate' the fourth dimension of velocity using Yelp data in class)
+* [x] extract: extract as much data as you can and need to face Big Data challenges (remember: volume, variety, veracity | we can discuss how to 'simulate' the fourth dimension of velocity using Yelp data in class)
 
 #Extract
 
@@ -82,6 +82,29 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (time, type, business_id);_
 
+_LOAD DATA LOCAL INFILE "/Users/bryannguyen/Documents/School/Spring2017/CS157B/Data/yelp_academic_dataset_user.csv"
+INTO TABLE user
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+escaped by '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(yelping_since, useful, compliment_photos, compliment_list, compliment_funny, compliment_plain, review_count, elite, fans, type, compliment_note, funny, compliment_writer, compliment_cute, average_stars, user_id, compliment_more, friends, compliment_hot, cool, name, compliment_profile, compliment_cool);_
+
+_LOAD DATA LOCAL INFILE "/Users/bryannguyen/Documents/School/Spring2017/CS157B/yelp_academic_dataset_review-3.csv"
+INTO TABLE review
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+escaped by '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(funny, user_id, review_id, review, business_id, stars, date, useful, type, cool);_
+
+_LOAD DATA LOCAL INFILE "/Users/bryannguyen/Documents/School/Spring2017/CS157B/Data/yelp_academic_dataset_tip.csv"
+INTO TABLE tip
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+escaped by '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(user_id, tip, business_id, likes, date, type);_
 
 After loading my data, I realized that there was problems with commas and the characters: _u'_ in some of the fields so I ran:
 
