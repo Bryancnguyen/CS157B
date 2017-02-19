@@ -1,4 +1,4 @@
-##Bryan Nguyen
+#Bryan Nguyen
 ###Duc Thanh Tran
 CS157B Notes Homework 2
 
@@ -106,13 +106,13 @@ IGNORE 1 LINES
 
 After loading my data, I realized that there was problems with commas and the characters: _u'_ in some of the fields so I ran:
 
-_UPDATE yelp_business_final
-SET attributes = replace(attributes,'u"'','');_
+_UPDATE business
+SET attributes = replace(attributes,'u'','');_
 
-_UPDATE yelp_business_final
+_UPDATE business
 SET categories = replace(categories,'u''','');_
 
-_UPDATE yelp_business_final
+_UPDATE business
 SET business_id = replace(business_id,',','');_
 
 I verfied that my data imported correctly after by using head -100 with the original CSV files and the imported data by querying each column. For example:
@@ -128,6 +128,14 @@ Select time from checkin;_
 * [ ] query: 2 queries, one 'simple' OLTP-like and one 2 OLAP-like analytical queries
 
 #Query
+
+One OTLP-like SQL query that I ran was similar to one of the queries above:
+
+_UPDATE business
+SET attributes = replace(attributes,'u'','');_
+
+This performs an update on the following columns in the table. Another OTLP command I ran was:
+
 
 ---
 
