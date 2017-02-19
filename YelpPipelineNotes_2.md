@@ -25,8 +25,7 @@ Using Yelp Dataset, go through the following steps and include detailed descript
 * [x] transform: convert extracted data to the format / schema suitable for loading into the database schema
 
 #Transform & Load
-
-  ##TRANSFORM
+##TRANSFORM
 
   In order to get the data into MySQL, I decided to go down the JSON route. First, I pulled all the information off the Google Drive because it seemed like JSON data would be much easier to import compared to getting the very large CSV files into MySQL. However, this turned out to be more confusing attempting to just view the JSON file in a JSON validating tool was not possible. Instead, I went back to using the provided CSV files.
 
@@ -36,30 +35,29 @@ Using Yelp Dataset, go through the following steps and include detailed descript
 
   Now, yelp_business.csv has about the first 100 lines that I want to use in my database. I also only want certain columns that might be relavent to me, so I used the command:
 
-  _csvcut -c neighborhood,business_id,hours,is_open,address,attributes,categories,city,review_count,name,longitude,state,stars,latitude,postal_code,type ./yelp_business.csv | csvlook_
+  _csvcut -c neighborhood,business_id,hours,is_open,address,attributes,categories,city,review_count,name,longitude,state,stars,latitude,postal_code,type ./yelp_academic_dataset_business.csv | csvlook_
 
 
   After this command, I was shown the lines that exist in my file.
 
   | neighborhood | business_id | hours | is_open | address | attributes | categories | city | review_count | name | longitude | state | stars | latitude | postal_code | type |
 
+  I repeated the same for the other tables just to see the types of columns I would need in order to transform the data into the correct schema that would be able to be imported.
+
+  However, using MySQL workbench was very slow and continued to crash, so I had to run all of my schema creations in the terminal. I mapped out all of the data types that I needed for each of the columns for all the tables and then used the following commands to create the tables.
+
+ _CREATE TABLE business (neighborhood text, business_id VARCHAR(45), hours text, is_open text, address text, attributes text, categories text, city text, review_count int(11), name text, longitude double, state text, stars int(11), latitude double, postal_code VARCHAR(45), type text);_
+
+ _CREATE TABLE checkin (time text, type text, business_id VARCHAR(45));_
+
+ _CREATE TABLE user (yelping_since text, useful int(11), compliment_photos int(11), compliment_list int(11), compliment_funny int(11), compliment_plain int(11), review_count int(11), elite text, fans int(11), type text, compliment_note int(11), funny int(11), compliment_writer int(11), compliment_cute int(11), average_stars double, user_id VARCHAR(45), compliment_more int(11), friends text, compliment_hot int(11), cool int(11), name text, compliment_profile int(11), compliment_cool int(11));_
+
+ _CREATE TABLE tip (user_id text, tip text, business_id varchar(45), likes int(11), date text, type text);_
+
+ _CREATE TABLE review (funny int(11), user_id varchar(45), review_id varchar(45), review text, business_id varchar(45), stars int(11), date text, useful int(11), type text, cool int(11));_
 
 
 ##LOAD
-
-After this, I created the schema within the creation of my table.
-Once I got the JSON data, I realized that I had to tell MySQL what data types each column was. I skimmed through the JSON object to find all the keys in order to put them in each column and manually insert what kind of data type each object was. However, using MySQL in the terminal was very slow and visibility was not good, so I had to install MySQL workbench to generate my schema.
-
-
-_CREATE TABLE business (neighborhood text, business_id VARCHAR(45), hours text, is_open text, address text, attributes text, categories text, city text, review_count int(11), name text, longitude double, state text, stars int(11), latitude double, postal_code VARCHAR(45), type text);_
-
-_CREATE TABLE checkin (time text, type text, business_id VARCHAR(45));_
-
-_CREATE TABLE user (yelping_since text, useful int(11), compliment_photos int(11), compliment_list int(11), compliment_funny int(11), compliment_plain int(11), review_count int(11), elite text, fans int(11), type text, compliment_note int(11), funny int(11), compliment_writer int(11), compliment_cute int(11), average_stars double, user_id VARCHAR(45), compliment_more int(11), friends text, compliment_hot int(11), cool int(11), name text, compliment_profile int(11), compliment_cool int(11));_
-
-_CREATE TABLE tip (user_id text, tip text, business_id varchar(45), likes int(11), date text, type text);_
-
-_CREATE TABLE review (funny int(11), user_id varchar(45), review_id varchar(45), review text, business_id varchar(45), stars int(11), date text, useful int(11), type text, cool int(11));_
 
 
 Now my data was ready for importing. I started my sql and loaded the file in local using --local-infile (had to do this or else mysql would say not in the language).
@@ -117,7 +115,13 @@ SET categories = replace(categories,'u''','');_
 _UPDATE yelp_business_final
 SET business_id = replace(business_id,',','');_
 
-After this, my business table was successfully imported, however some of the data was still inaccurate when I did: _select stars from yelp_business_final_ . I had postal_code in some of the fields for postal_code which was not correct.
+I verfied that my data imported correctly after by using head -100 with the original CSV files and the imported data by querying each column. For example:
+
+_Select city from business;
+Select user_id from user;
+Select tip from tip;
+Select funny from review;
+Select time from checkin;_
 
 ---
 
