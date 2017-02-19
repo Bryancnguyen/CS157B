@@ -42,6 +42,7 @@ Using Yelp Dataset, go through the following steps and include detailed descript
 
   | neighborhood | business_id | hours | is_open | address| attributes | categories | city | review_count | name | longitude | state | stars | latitude | postal_code | type |
   |:------|:------|:------|:------|:------|:------|:------|:------|:------|:------|:------|:------|:------|:------|:------|:------|
+  ||||||||||||||||
 
 ##LOAD
 
