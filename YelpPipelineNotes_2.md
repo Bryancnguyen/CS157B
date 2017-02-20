@@ -206,22 +206,33 @@ After trying to add these contraints, I recieved a lot of errors from MySQL, so 
 
 Normalization with categories:
 
-_CREATE TABLE business_id (business_id CHAR(45) primary key);
-CREATE TABLE categories(
-  categories_id int primary key,
-  type VARCHAR(45)
+First I ran a query on categories on business table.
+
+_Select categories from business_
+
+This is slow. So I decided to normalize the categories
+
+_CREATE TABLE categories(
+  categories int primary key,
+  attributes VARCHAR(45)
 );_
 
+_INSERT INTO categories categories, attributes
 select categories.categories_id, group_concat(categories.type)
-from business_id
-join categories on categories.categories_id=business_id.business_id
-group by business_id.business_id;
+from business
+join categories on categories.categories=business_id.categories
+group by business_id.business_id;_
+
+_ALTER TABLE business_id
+DROP COLUMN categories;_
+
+Then I dropped the column from categories as I no longer needed it and now I can just refer to the categories when ever I need to. 
 
 ---
 
 #Optimize Performance
 
-* [ ] optimize performance: improve performance via de-normalization (vertical / horizontal partitioning), indexes, views
+* [x] optimize performance: improve performance via de-normalization (vertical / horizontal partitioning), indexes, views
 
 I first tried to view the performance of a basic query such as:
 
@@ -256,48 +267,48 @@ After this view creation, my query ran much faster at about 3 minutes compared t
 
 For Horizontal partioning I decided to create a table based on information that was relavent and inserted the stars for each business.
 
-CREATE TABLE business_highStars(
+_CREATE TABLE business_highStars(
 	neighborhood VARCHAR(45),
     business_id VARCHAR(45) PRIMARY KEY,
     name VARCHAR(45),
     stars VARCHAR(45),
 	  FOREIGN KEY (business_id) REFERENCES business(﻿business_id)
-);
+);_
 
-INSERT INTO business_highStars
+_INSERT INTO business_highStars
 SELECT neighborhood, ﻿business_id, hours, address, name, stars
 FROM business
-WHERE stars > 2.5;
+WHERE stars > 2.5;_
 
 Now business_highStars has all of the stars that are greater than 2.5. At the same time I am doing a vertical partitioning by only getting the necessary information in the rows relavent to my query and then inserting them into the high table. I do the same with the low stars.
 
-CREATE TABLE business_lowStars(
+_CREATE TABLE business_lowStars(
 	neighborhood VARCHAR(45),
     business_id VARCHAR(45) PRIMARY KEY,
     name VARCHAR(45),
     stars VARCHAR(45),
 	  FOREIGN KEY (business_id) REFERENCES business(﻿business_id)
-);
+);_
 
-INSERT INTO business_lowStars
+_INSERT INTO business_lowStars
 SELECT neighborhood, ﻿business_id, hours, address, name, stars
 FROM business
-WHERE stars < 2.5;
+WHERE stars < 2.5;_
 
-select * from business_highStars;
+_select * from business_highStars;
 create table allBusinessAndStars(
     name VARCHAR(45),
     stars VARCHAR(45),
-);
+);_
 
 Then finally I pull out information about the names and stars for each of the businesses.
 
-INSERT INTO allBusinessAndStars 
+_INSERT INTO allBusinessAndStars
 SELECT name, stars
-FROM business
+FROM business;_
 
-SELECT name, AVG(stars)
+_SELECT name, AVG(stars)
 FROM allBusinessAndStars
-GROUP BY name;
+GROUP BY name;_
 
 ---
