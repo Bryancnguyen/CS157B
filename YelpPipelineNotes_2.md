@@ -59,7 +59,6 @@ Using Yelp Dataset, go through the following steps and include detailed descript
 
 ##LOAD
 
-
 Now my data was ready for importing. I started my sql and loaded the file in local using --local-infile (had to do this or else mysql would say not in the language).
 
 _mysql --local-infile -uroot -ppassword yelp_
@@ -131,20 +130,20 @@ Select time from checkin;_
 
 Simple OLTP-like query:
 
-INSERT INTO review (user_id, stars, date, business_id)
-VALUES ('NwiW9D0809b9jbuEXenUEg', '5', '2017-02-18', 'a048R60CLFeObJ3mhHdPRg');
+_INSERT INTO review (user_id, stars, date, business_id)
+VALUES ('NwiW9D0809b9jbuEXenUEg', '5', '2017-02-18', 'a048R60CLFeObJ3mhHdPRg');_
 
 This is just a typical query of a user inserting a new rating for a business into the reviews table.
 
 One OLAP-like query:
 
-SELECT  review.business_id,
+_SELECT  review.business_id,
         review.date,
         review.stars
 FROM review
 INNER JOIN user ON review.user_id=user.user_id
 INNER JOIN business on business.business_id=review_id
-where date LIKE '%2013%' and stars > 3;
+where date LIKE '%2013%' and stars > 3;_
 
 ---
 
@@ -154,10 +153,10 @@ where date LIKE '%2013%' and stars > 3;
 
 One single row update I did was:
 
-UPDATE user U
+_UPDATE user U
     INNER JOIN review R
     ON U.user_id = R.user_id
-      SET U.funny = R.funny;
+      SET U.funny = R.funny;_
 
 Simple update query based on the user_id from both tables to set funny columns equal to each other.
 
@@ -173,33 +172,132 @@ This was to remove the unnecessary u' data and commas that were in my data.
 
 ---
 
-* [ ] optimize quality: illustrate how to capture and maintain data quality via integrity constraints, normalization and transactions
+* [x] optimize quality: illustrate how to capture and maintain data quality via integrity constraints, normalization and transactions
 
 #Optimize Quality
 
-ALTER TABLE business ADD PRIMARY KEY(business_id);
+_ALTER TABLE business ADD PRIMARY KEY(business_id);_
 
-ALTER TABLE checkin
+_ALTER TABLE user ADD PRIMARY KEY(user_id);_
+
+_ALTER TABLE review ADD PRIMARY KEY(review_id);_
+
+_ALTER TABLE checkin
 ADD FOREIGN KEY (business_id)
-REFERENCES business (business_id);
+REFERENCES business (business_id);_
 
-ALTER TABLE review
+_ALTER TABLE review
 ADD FOREIGN KEY (business_id)
-REFERENCES business (business_id);
+REFERENCES business (business_id);_
 
-ALTER TABLE tip
+_ALTER TABLE tip
 ADD FOREIGN KEY (business_id)
-REFERENCES business (business_id);
+REFERENCES business (business_id);_
 
-ALTER TABLE tip
+_ALTER TABLE tip
 ADD FOREIGN KEY (user_id)
-REFERENCES user (user_id);
+REFERENCES user (user_id);_
 
+_ALTER TABLE review
+ADD FOREIGN KEY (user_id)
+REFERENCES user (user_id);_
+
+After trying to add these contraints, I recieved a lot of errors from MySQL, so I went back and dropped all my tables and re-loaded my tables with the constraints and no longer had any issues.
+
+Normalization with categories:
+
+_CREATE TABLE business_id (business_id CHAR(45) primary key);
+CREATE TABLE categories(
+  categories_id int primary key,
+  type VARCHAR(45)
+);_
+
+select categories.categories_id, group_concat(categories.type)
+from business_id
+join categories on categories.categories_id=business_id.business_id
+group by business_id.business_id;
 
 ---
 
 #Optimize Performance
 
 * [ ] optimize performance: improve performance via de-normalization (vertical / horizontal partitioning), indexes, views
+
+I first tried to view the performance of a basic query such as:
+
+
+_SELECT business.business_id, avg(business.stars)
+FROM business JOIN tip WHERE business.﻿'business_id' = tip.business_id
+GROUP BY business.business_id;_
+
+This took a long time for my data to iterate over both of the tables. This call took about 5 minutes in order to complete in my terminal. So I decided to impove performance by creating an index:
+
+_CREATE INDEX
+business_id_stars
+ON business(business_id, stars);_
+
+After creating this index, it improved my performance by 4 minutes when re-running the query that I had run before. In the end creating indexes extremely helped my performance because I only had to deal with the columns that actually mattered to me.
+
+I also created a view for my database based on business_id. First I ran this query:
+
+_SELECT business.name,COUNT(review.stars) AS NumberOfStars
+FROM review
+LEFT JOIN business
+ON review.stars=business.stars
+GROUP BY name;_
+
+This query took an exemptional amount of time. So long that I didn't even bother waiting after 10 minutes for it to complete. So I created a view on business_id and name and then ran my query.
+
+_CREATE VIEW business_view AS
+SELECT 'business_id', name
+FROM business;_
+
+After this view creation, my query ran much faster at about 3 minutes compared to the extensive amount of time.
+
+For Horizontal partioning I decided to create a table based on information that was relavent and inserted the stars for each business.
+
+CREATE TABLE business_highStars(
+	neighborhood VARCHAR(45),
+    business_id VARCHAR(45) PRIMARY KEY,
+    name VARCHAR(45),
+    stars VARCHAR(45),
+	  FOREIGN KEY (business_id) REFERENCES business(﻿business_id)
+);
+
+INSERT INTO business_highStars
+SELECT neighborhood, ﻿business_id, hours, address, name, stars
+FROM business
+WHERE stars > 2.5;
+
+Now business_highStars has all of the stars that are greater than 2.5. At the same time I am doing a vertical partitioning by only getting the necessary information in the rows relavent to my query and then inserting them into the high table. I do the same with the low stars.
+
+CREATE TABLE business_lowStars(
+	neighborhood VARCHAR(45),
+    business_id VARCHAR(45) PRIMARY KEY,
+    name VARCHAR(45),
+    stars VARCHAR(45),
+	  FOREIGN KEY (business_id) REFERENCES business(﻿business_id)
+);
+
+INSERT INTO business_lowStars
+SELECT neighborhood, ﻿business_id, hours, address, name, stars
+FROM business
+WHERE stars < 2.5;
+
+select * from business_highStars;
+create table allBusinessAndStars(
+    name VARCHAR(45),
+    stars VARCHAR(45),
+);
+
+Then finally I pull out information about the names and stars for each of the businesses.
+
+INSERT INTO allBusinessAndStars 
+SELECT name, stars
+FROM business
+
+SELECT name, AVG(stars)
+FROM allBusinessAndStars
+GROUP BY name;
 
 ---
