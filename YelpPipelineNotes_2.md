@@ -202,7 +202,7 @@ _ALTER TABLE review
 ADD FOREIGN KEY (user_id)
 REFERENCES user (user_id);_
 
-After trying to add these contraints, I recieved a lot of errors from MySQL, so I went back and dropped all my tables and re-loaded my tables with the constraints and no longer had any issues.
+After trying to add these contraints, I recieved a lot of errors from MySQL, so I went back and dropped all my tables and re-loaded my tables with the constraints and no longer had any issues. Having constraints makes my data upon importing free from error and more accurate. Based on my experience, adding the constraints after made creating constraints impossible, which would not allow me to optimize my data afterwards. Also, if I continued to work with the data that didn't have constraints in the beginning, my data most likely would not have been accurate.
 
 Normalization with categories:
 
@@ -226,7 +226,7 @@ group by business_id.business_id;_
 _ALTER TABLE business_id
 DROP COLUMN categories;_
 
-Then I dropped the column from categories as I no longer needed it and now I can just refer to the categories when ever I need to. 
+Then I dropped the column from categories as I no longer needed it and now I can just refer to the categories whenever I need to. Normalization makes it so that I do not have to keep on querying the business table for information about the categories and attributes again and again. Also if I were to manipulte the data in categories, I would have a different table to assess it in. This leads me into talking about transactions, since in transactions we want to insure that ACID properties are always being consistent therefore, using normalization in this case increases data quality. Normalization also ensures data quality since we are removing the redunant categories if possible and organizes the data in a way that benefits ACID properties
 
 ---
 
