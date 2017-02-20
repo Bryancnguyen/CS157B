@@ -124,7 +124,7 @@ Select time from checkin;_
 
 ---
 
-* [ ] query: 2 queries, one 'simple' OLTP-like and one 2 OLAP-like analytical queries
+* [x] query: 2 queries, one 'simple' OLTP-like and one 2 OLAP-like analytical queries
 
 #Query
 
@@ -235,7 +235,6 @@ Then I dropped the column from categories as I no longer needed it and now I can
 * [x] optimize performance: improve performance via de-normalization (vertical / horizontal partitioning), indexes, views
 
 I first tried to view the performance of a basic query such as:
-
 
 _SELECT business.business_id, avg(business.stars)
 FROM business JOIN tip WHERE business.﻿'business_id' = tip.business_id
